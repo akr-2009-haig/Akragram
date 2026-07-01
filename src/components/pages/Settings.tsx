@@ -21,10 +21,14 @@ import {
   X,
   Save,
   Eye,
-  EyeOff
+  EyeOff,
+  Download,
+  Upload,
+  RotateCcw,
+  AlertTriangle
 } from 'lucide-react';
 
-type SettingsSection = 'api' | 'limits' | 'storage' | 'notifications' | 'security' | 'language' | 'database' | 'logs' | 'schedule';
+type SettingsSection = 'api' | 'limits' | 'storage' | 'notifications' | 'security' | 'language' | 'database' | 'logs' | 'schedule' | 'backup' | 'reset';
 
 export default function Settings() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('api');
@@ -41,6 +45,8 @@ export default function Settings() {
     { id: 'database', label: 'قاعدة البيانات', icon: <Database size={18} /> },
     { id: 'logs', label: 'التسجيل', icon: <FileText size={18} /> },
     { id: 'schedule', label: 'الجدولة التلقائية', icon: <Clock size={18} /> },
+    { id: 'backup', label: 'النسخ الاحتياطي', icon: <Download size={18} /> },
+    { id: 'reset', label: 'إعادة الضبط', icon: <RotateCcw size={18} /> },
   ];
 
   const systemInfo = {
@@ -404,11 +410,11 @@ export default function Settings() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">اللغة</label>
                   <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                     {[
-                      { code: 'ar', name: 'العربية', flag: 'SA' },
-                      { code: 'en', name: 'English', flag: 'GB' },
-                      { code: 'tr', name: 'Türkçe', flag: 'TR' },
-                      { code: 'ru', name: 'Русский', flag: 'RU' },
-                      { code: 'es', name: 'Español', flag: 'ES' },
+                      { code: 'ar', name: 'العربية', flag: '\'ud83c\'uddf8\'ud83c\'uddf6' },
+                      { code: 'en', name: 'English', flag: '\'ud83c\'uddec\'ud83c\'udde7' },
+                      { code: 'tr', name: 'T\'fcrk\'e7e', flag: '\'ud83c\'uddf9\'ud83c\'uddf7' },
+                      { code: 'ru', name: 'Русский', flag: '\'ud83c\'uddf7\'ud83c\'uddfa' },
+                      { code: 'es', name: 'Espa\'f1ol', flag: '\'ud83c\'uddea\'ud83c\'uddf8' },
                     ].map((lang) => (
                       <button
                         key={lang.code}
@@ -418,7 +424,7 @@ export default function Settings() {
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
-                        <p className="text-lg font-bold text-gray-800">{lang.flag}</p>
+                        <span className="text-2xl">{lang.flag}</span>
                         <p className="text-xs text-gray-600 mt-1">{lang.name}</p>
                       </button>
                     ))}
@@ -577,6 +583,117 @@ export default function Settings() {
                     <span className="text-sm text-gray-500">{task.time}</span>
                   </label>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'backup' && (
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                  <Download size={20} className="text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">النسخ الاحتياطي</h3>
+                  <p className="text-sm text-gray-500">حفظ واستعادة البيانات</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-gray-800">آخر نسخة احتياطية</p>
+                      <p className="text-sm text-gray-500">2024-01-15 14:30</p>
+                    </div>
+                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium">منذ يومين</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button className="p-4 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors text-center border border-emerald-200">
+                    <Download size={24} className="mx-auto mb-2 text-emerald-600" />
+                    <p className="text-sm font-medium text-emerald-700">إنشاء نسخة احتياطية</p>
+                    <p className="text-xs text-emerald-600 mt-1">حفظ كامل</p>
+                  </button>
+                  <button className="p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-center border border-blue-200">
+                    <Upload size={24} className="mx-auto mb-2 text-blue-600" />
+                    <p className="text-sm font-medium text-blue-700">استعادة نسخة</p>
+                    <p className="text-xs text-blue-600 mt-1">من ملف</p>
+                  </button>
+                </div>
+
+                <div className="p-4 bg-gray-50 rounded-xl">
+                  <p className="font-medium text-gray-800 mb-3">محتوى النسخة الاحتياطية</p>
+                  <div className="space-y-2">
+                    {[
+                      { label: 'جلسات الحسابات', checked: true },
+                      { label: 'إعدادات النظام', checked: true },
+                      { label: 'قاعدة البيانات', checked: true },
+                      { label: 'القوالب والرسائل', checked: true },
+                      { label: 'سجلات العمليات', checked: false },
+                    ].map((item, index) => (
+                      <label key={index} className="flex items-center justify-between cursor-pointer p-2">
+                        <span className="text-sm text-gray-700">{item.label}</span>
+                        <input type="checkbox" defaultChecked={item.checked} className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-amber-50 rounded-xl flex items-start gap-3">
+                  <AlertTriangle size={20} className="text-amber-600 flex-shrink-0" />
+                  <p className="text-sm text-amber-700">النسخ الاحتياطي يحتوي على بيانات حساسة. احفظه في مكان آمن.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'reset' && (
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                  <RotateCcw size={20} className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">إعادة الضبط</h3>
+                  <p className="text-sm text-gray-500">إعادة النظام للحالة الافتراضية</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-red-50 rounded-xl mb-6 flex items-start gap-3">
+                <AlertTriangle size={20} className="text-red-600 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-red-700 font-medium mb-1">تحذير: إجراءات غير قابلة للتراجع</p>
+                  <p className="text-xs text-red-600">تأكد من إنشاء نسخة احتياطية قبل المتابعة.</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <button className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-right">
+                  <p className="font-medium text-gray-800">إعادة ضبط الإعدادات</p>
+                  <p className="text-sm text-gray-500">إعادة جميع الإعدادات للقيم الافتراضية</p>
+                </button>
+
+                <button className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-right">
+                  <p className="font-medium text-gray-800">مسح سجلات العمليات</p>
+                  <p className="text-sm text-gray-500">حذف جميع السجلات المحفوظة</p>
+                </button>
+
+                <button className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-right">
+                  <p className="font-medium text-gray-800">مسح القوالب والرسائل</p>
+                  <p className="text-sm text-gray-500">حذف جميع القوالب المحفوظة</p>
+                </button>
+
+                <button className="w-full p-4 bg-orange-50 border border-orange-200 rounded-xl hover:bg-orange-100 transition-colors text-right">
+                  <p className="font-medium text-orange-700">مسح جميع البيانات</p>
+                  <p className="text-sm text-orange-600">حذف كامل للبيانات مع الاحتفاظ بالجلسات</p>
+                </button>
+
+                <button className="w-full p-4 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors text-right">
+                  <p className="font-medium text-red-700">إعادة ضبط المصنع</p>
+                  <p className="text-sm text-red-600">حذف كل شيء وإعادة النظام من الصفر</p>
+                </button>
               </div>
             </div>
           )}
